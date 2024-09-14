@@ -7,6 +7,7 @@ const server = http.createServer((req, res) => {
     logRequest(req);
     if (req.url === "/") return respondHello(req, res);
     if (req.url === "/user-agent") return respondUserAgent(req, res);
+    if (req.url.match(/^\/b64\//)) return respondBase64(req, res);
 
     res.end();
 });
@@ -18,6 +19,11 @@ function respondHello(req, res) {
 function respondUserAgent(req, res) {
     const ua = req.headers["user-agent"];
     res.end(JSON.stringify({ ua }));
+}
+
+function respondBase64(req, res) {
+    const phrase = req.url.replace(/^\/b64\//, "");
+    res.end(JSON.stringify({ b64: Buffer.from(phrase).toString("base64") }));
 }
 
 server.listen(PORT);
